@@ -1,119 +1,123 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>CSV and TSV Parser</title>
-	<meta charset="utf-8">
+    <meta charset="utf-8" />
     <style>
         html {
             font-family: Segoe UI, sans-serif;
         }
-
+        
         table {
             border-collapse: collapse;
             width: 100%;
-			text-align: center;
+            text-align: center;
         }
-
-        th, td {
+        
+        th,
+        td {
             padding: 8px;
         }
-
+        
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-
+        
         th {
             background-color: #0078D4;
             color: white;
             border-bottom: 2px solid #333;
         }
-
-		#output{
-			margin-top: 23px;
-		}
+        
+        #output {
+            margin-top: 23px;
+        }
     </style>
 </head>
+
 <body>
     <h1>CSV and TSV Parser</h1>
-    <input type="file" id="fileInput" accept=".csv, .tsv">
+    <input type="file" id="fileInput" accept=".csv, .tsv" />
     <div id="output"></div>
 
     <script>
-		class CsvParser {
-			constructor(csv, delimiter) {
-				this.csv = csv;
-				this.delimiter = delimiter || this.autoDetectDelimiter();
-			}
+        class CsvParser {
+            constructor(csv, delimiter) {
+                this.csv = csv;
+                this.delimiter = delimiter || this.autoDetectDelimiter();
+            }
 
-			autoDetectDelimiter() {
-				const delimiters = [',', ';', '\t', '|'];
-				let maxCount = 0;
-				let detectedDelimiter = delimiters[0];
-				delimiters.forEach(delimiter => {
-					const firstLine = this.csv.split('\n')[0];
-					const count = firstLine.split(delimiter).length;
-					if (count > maxCount) {
-						maxCount = count;
-						detectedDelimiter = delimiter;
-					}
-				});
-				return detectedDelimiter;
-			}
+            autoDetectDelimiter() {
+                const delimiters = [',', ';', '\t', '|'];
+                let maxCount = 0;
+                let detectedDelimiter = delimiters[0];
+                delimiters.forEach(delimiter => {
+                    const firstLine = this.csv.split('\n')[0];
+                    const count = firstLine.split(delimiter).length;
+                    if (count > maxCount) {
+                        maxCount = count;
+                        detectedDelimiter = delimiter;
+                    }
+                });
+                return detectedDelimiter;
+            }
 
-			parse() {
-				const rows = [];
-				let row = [];
-				let cell = '';
-				let inQuotes = false;
-				for (let i = 0; i < this.csv.length; i++) {
-					const char = this.csv[i];
-					if (char === '"') {
-						inQuotes = !inQuotes;
-					} else if (char === this.delimiter && !inQuotes) {
-						row.push(cell);
-						cell = '';
-					} else if (char === '\n' && !inQuotes) {
-						row.push(cell);
-						if (row.some(cell => cell)) rows.push(row);
-						row = [];
-						cell = '';
-					} else {
-						cell += char;
-					}
-				}
-				if (cell) row.push(cell);
-				if (row.length && row.some(cell => cell)) rows.push(row);
-				return rows;
-			}
+            parse() {
+                const rows = [];
+                let row = [];
+                let cell = '';
+                let inQuotes = false;
+                for (let i = 0; i < this.csv.length; i++) {
+                    const char = this.csv[i];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === this.delimiter && !inQuotes) {
+                        row.push(cell);
+                        cell = '';
+                    } else if (char === '\n' && !inQuotes) {
+                        row.push(cell);
+                        if (row.some(cell => cell)) rows.push(row);
+                        row = [];
+                        cell = '';
+                    } else {
+                        cell += char;
+                    }
+                }
+                if (cell) row.push(cell);
+                if (row.length && row.some(cell => cell)) rows.push(row);
+                return rows;
+            }
 
-			toHTML() {
-				const data = this.parse();
-				const table = document.createElement('table');
-				data.forEach((rowData, i) => {
-					const row = document.createElement('tr');
-					rowData.forEach(cellData => {
-						const cell = document.createElement(i === 0 ? 'th' : 'td');
-						cell.textContent = cellData;
-						row.appendChild(cell);
-					});
-					table.appendChild(row);
-				});
-				return table.outerHTML;
-			}
-		}
+            toHTML() {
+                const data = this.parse();
+                const table = document.createElement('table');
+                data.forEach((rowData, i) => {
+                    const row = document.createElement('tr');
+                    rowData.forEach(cellData => {
+                        const cell = document.createElement(i === 0 ? 'th' : 'td');
+                        cell.textContent = cellData;
+                        row.appendChild(cell);
+                    });
+                    table.appendChild(row);
+                });
+                return table.outerHTML;
+            }
+        }
 
-		document.getElementById('fileInput').addEventListener('change', event => {
-			const file = event.target.files[0];
-			if (file) {
-				const reader = new FileReader();
-				reader.onload = e => {
-					const csv = e.target.result;
-					const parser = new CsvParser(csv);
-					document.getElementById('output').innerHTML = parser.toHTML();
-				};
-				reader.readAsText(file);
-			}
-		});
+        document.getElementById('fileInput').addEventListener('change', event => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const csv = e.target.result;
+                    const parser = new CsvParser(csv);
+                    document.getElementById('output').innerHTML = parser.toHTML();
+                };
+                reader.readAsText(file);
+            }
+        });
     </script>
 </body>
+
 </html>
