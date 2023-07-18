@@ -1,4 +1,5 @@
 ![image](https://github.com/StarkSocial/csvparser/assets/64984344/a39500c3-5573-45a0-9bd5-1c6db17a7013)
+[Demo](https://starksocial.github.io/csvparser/parser.html)
 
 # CSV and TSV Parser
 
